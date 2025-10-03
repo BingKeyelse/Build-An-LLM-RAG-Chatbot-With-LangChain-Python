@@ -6,7 +6,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv() # Load môi trường
 def bs4_extractor(html: str) -> str:
     """
     Hàm trích xuất và làm sạch nội dung từ HTML
@@ -31,9 +31,14 @@ def crawl_web(url_data):
     loader = RecursiveUrlLoader(url=url_data, extractor=bs4_extractor, max_depth=4)
     docs = loader.load()  # Tải nội dung
     print('length: ', len(docs))  # In số lượng tài liệu đã tải
+
+    # print(docs[0].page_content)  # nội dung văn bản
+    # print(docs[0].metadata)      # thông tin metadata
+    print(len(docs[0].page_content))
+
     
     # Chia nhỏ văn bản thành các đoạn 10000 ký tự, với 500 ký tự chồng lấp
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=500)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=500)
     all_splits = text_splitter.split_documents(docs)
     print('length_all_splits: ', len(all_splits))  # In số lượng đoạn văn bản sau khi chia
     return all_splits
@@ -75,7 +80,7 @@ def save_data_locally(documents, filename, directory):
     data_to_save = [{'page_content': doc.page_content, 'metadata': doc.metadata} for doc in documents]
     # Lưu vào file JSON
     with open(file_path, 'w') as file:
-        json.dump(data_to_save, file, indent=4)
+        json.dump(data_to_save, file, indent=4) # indent là để tự động thụt lèe
     print(f'Data saved to {file_path}')  # In thông báo lưu thành công
 
 def main():
