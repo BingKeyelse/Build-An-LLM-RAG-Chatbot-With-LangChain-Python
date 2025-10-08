@@ -28,12 +28,16 @@
 
 1. Khởi động Docker Desktop
 2. Mở Terminal/Command Prompt, chạy lệnh:
-   docker compose up --build
+  docker-compose pull 
+  docker compose up --build
 
 > ⚠️ Đợi đến khi thấy thông báo "Milvus is ready"
 
 Option: Cài đặt attu để view data đã seed vào Milvus:
 1. Chạy lệnh: docker run -p 8000:3000 -e MILVUS_URL={milvus server IP}:19530 zilliz/attu:v2.4
+   docker run -p 8000:3000 -e MILVUS_URL=172.20.32.1:19530 zilliz/attu
+   accept: http://localhost:8080
+
 2. 2 Thay "milvus server IP" bằng IP internet local, cách lấy IP local:
    - Chạy lệnh: ipconfig hoặc tương tự với các hệ điều hành khác
 

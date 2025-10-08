@@ -6,6 +6,7 @@ from langchain.schema import Document
 from dotenv import load_dotenv
 from uuid import uuid4
 from crawl import crawl_web
+from langchain.embeddings import HuggingFaceEmbeddings
 
 load_dotenv()
 
@@ -42,7 +43,8 @@ def seed_milvus(URI_link: str, collection_name: str, filename: str, directory: s
         - Collection cũ sẽ bị xóa nếu đã tồn tại (drop_old=True)
     """
     # Khởi tạo model embeddings từ OpenAI
-    embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
+    # embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     # Đọc dữ liệu từ file local
     local_data, doc_name = load_data_from_local(filename, directory)
 
@@ -63,10 +65,11 @@ def seed_milvus(URI_link: str, collection_name: str, filename: str, directory: s
         for doc in local_data
     ]
 
-    print('documents: ', documents)
+    print('documents: ', documents[0].metadata)
 
     # Tạo ID duy nhất cho mỗi document
     uuids = [str(uuid4()) for _ in range(len(documents))]
+    print(uuids)
 
     # Khởi tạo và cấu hình Milvus
     vectorstore = Milvus(
@@ -78,6 +81,7 @@ def seed_milvus(URI_link: str, collection_name: str, filename: str, directory: s
     # Thêm documents vào Milvus
     vectorstore.add_documents(documents=documents, ids=uuids)
     print('vector: ', vectorstore)
+
     return vectorstore
 
 def seed_milvus_live(URL: str, URI_link: str, collection_name: str, doc_name: str) -> Milvus:
@@ -94,7 +98,8 @@ def seed_milvus_live(URL: str, URI_link: str, collection_name: str, doc_name: st
         - Sử dụng hàm crawl_web() để lấy dữ liệu
         - Tự động gán metadata mặc định cho các trường thiếu
     """
-    embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
+    # embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     documents = crawl_web(URL)
 
     # Cập nhật metadata cho mỗi document với giá trị mặc định
@@ -152,7 +157,7 @@ def main():
         - Các biến môi trường cần thiết (như OPENAI_API_KEY) đã được cấu hình
     """
     # Test seed_milvus với dữ liệu local
-    seed_milvus('http://localhost:19530', 'data_test', 'stack.json', 'data')
+    seed_milvus('http://localhost:19530', 'data_testHHH1', 'stack.json', 'data_v3')
     # Test seed_milvus_live với URL trực tiếp
     # seed_milvus_live('https://www.stack-ai.com/docs', 'http://localhost:19530', 'data_test_live_v2', 'stack-ai')
 

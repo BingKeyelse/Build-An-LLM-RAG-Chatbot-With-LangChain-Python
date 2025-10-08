@@ -96,15 +96,16 @@ def setup_chat_interface():
     st.caption("🚀 Trợ lý AI được hỗ trợ bởi LangChain và OpenAI")
 
     # Khởi tạo bộ nhớ chat
-    msgs = StreamlitChatMessageHistory(key="langchain_messages")
+    msgs = StreamlitChatMessageHistory(key="langchain_messages") # Này thì nên sự dụng một cái data base để lưu lịch sử như mông hay sql
     
     # Tạo tin nhắn chào mừng nếu là chat mới
     if "messages" not in st.session_state:
         st.session_state.messages = [
             {"role": "assistant", "content": "Tôi có thể giúp gì cho bạn?"}
         ]
-        msgs.add_ai_message("Tôi có thể giúp gì cho bạn?")
-
+        msgs.add_ai_message("Tôi có thể giúp gì cho bạn?") # đang ghi mess và trong st.session_state
+        # có cả  add_user_message
+        
     # Hiển thị lịch sử chat
     for msg in st.session_state.messages:
         role = "assistant" if msg["role"] == "assistant" else "human"
@@ -123,12 +124,12 @@ def handle_user_input(msgs, agent_executor):
     if prompt := st.chat_input("Hãy hỏi tôi bất cứ điều gì về Stack AI!"):
         # Lưu và hiển thị tin nhắn người dùng
         st.session_state.messages.append({"role": "human", "content": prompt})
-        st.chat_message("human").write(prompt)
+        st.chat_message("human").write(prompt) # cho vai trò và prompt mình nhập
         msgs.add_user_message(prompt)
 
         # Xử lý và hiển thị câu trả lời
         with st.chat_message("assistant"):
-            st_callback = StreamlitCallbackHandler(st.container())
+            st_callback = StreamlitCallbackHandler(st.container()) # đây chỉ đơn giản là ô container để suy nghĩ thôi 
             
             # Lấy lịch sử chat
             chat_history = [
